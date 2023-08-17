@@ -11,21 +11,26 @@ export const Meaning = ({ data }: { data: any }) => {
 		textColor: "text-black",
 	});
 	const { word, phonetic, phonetics, meanings } = data;
-  // const audioLink=phonetics[0].audio
-  // const [playing, toggle] = useAudio(audioLink);
-  const [audio] = useState(new Audio(phonetics[0].audio))
+
+	// const [audio] = useState(new Audio(phonetics[0].audio));
+  const [audio, setAudio] = useState<HTMLAudioElement|null>(null)
+  useEffect(() => {
+
+    setAudio(new Audio(phonetics[0].audio)) // only call client
+
+},[phonetics])
 	const togglePlay = () => {
-    console.log(play)
+		console.log(play);
 		setPlay((prevPlay) => !prevPlay);
-    play? audio.play() : audio.pause();
+		play ? audio?.play() : audio?.pause();
 	};
 
-  useEffect(() => {
-    audio.addEventListener('ended', () => setPlay(true));
-    return () => {
-      audio.removeEventListener('ended', () => setPlay(true));
-    };
-  },[audio]);
+	useEffect(() => {
+		audio?.addEventListener("ended", () => setPlay(true));
+		return () => {
+			audio?.removeEventListener("ended", () => setPlay(true));
+		};
+	}, [audio]);
 	function handleClick(index: number) {
 		console.log(state);
 		setState(index);
@@ -48,10 +53,8 @@ export const Meaning = ({ data }: { data: any }) => {
 						onClick={togglePlay}
 					/>
 				)}
-				
+
 				<p>{phonetic}</p>
-				{/* <div className="text-sm bg-gray-200 text-black rounded px-1.5">UK</div>
-				<div className="text-sm bg-gray-200 text-black rounded px-1.5">US</div> */}
 			</div>
 			<div className="ml-3">
 				<div className="flex gap-2 mt-4  select-none">
@@ -71,13 +74,6 @@ export const Meaning = ({ data }: { data: any }) => {
 							</button>
 						);
 					})}
-
-					{/* <button
-            type="button"
-            className="bg-gray-200 text-black px-3  text-sm rounded"
-          >
-            verb
-          </button> */}
 				</div>
 				<div className="mt-4 mx-4 select-text">
 					<ol className="list-decimal  list-outside">
