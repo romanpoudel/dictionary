@@ -1,54 +1,94 @@
 "use client";
 
 import { PlayCircleIcon, PauseCircleIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export const Meaning = ({data}:{data:any}) => {
-  const [play, setPlay] = useState(true);
-  console.log(data)
-  const toggle = () => {
-    setPlay(!play);
-  };
-  return (
-    <div className="border-2 border-slate-200 rounded-3xl h-96 sm:h-[626px] mt-6 p-3 sm:p-6">
-      <div className="flex items-center gap-2 sm:gap-4 select-none">
-        {play ? (
-          <PlayCircleIcon className="w-10 h-10" onClick={toggle} />
-        ) : (
-          <PauseCircleIcon className="w-10 h-10" onClick={toggle} />
-        )}
-        <p>/'aep.el</p>
-      </div>
-      <div className="ml-3">
-        <div className="flex gap-2 mt-4  select-none">
-          <button
-            type="button"
-            className="bg-black text-white px-3  text-sm rounded"
-          >
-            noun
-          </button>
-          <button
+export const Meaning = ({ data }: { data: any }) => {
+	const [play, setPlay] = useState<boolean>(true);
+	const [state, setState] = useState<number>(0);
+	const [colors, setColors] = useState({
+		backgroundColor: "bg-gray-200",
+		textColor: "text-black",
+	});
+	const { word, phonetic, phonetics, meanings } = data;
+  // const audioLink=phonetics[0].audio
+  // const [playing, toggle] = useAudio(audioLink);
+  const [audio] = useState(new Audio(phonetics[0].audio))
+	const togglePlay = () => {
+    console.log(play)
+		setPlay((prevPlay) => !prevPlay);
+    play? audio.play() : audio.pause();
+	};
+
+  useEffect(() => {
+    audio.addEventListener('ended', () => setPlay(true));
+    return () => {
+      audio.removeEventListener('ended', () => setPlay(true));
+    };
+  },[audio]);
+	function handleClick(index: number) {
+		console.log(state);
+		setState(index);
+		setColors({
+			backgroundColor: "bg-black",
+			textColor: "text-white",
+		});
+	}
+	return (
+		<div className="border-2 border-slate-200 rounded-3xl h-fit mt-6 p-3 sm:p-6">
+			<div className="flex items-center gap-2 sm:gap-4 select-none">
+				{play ? (
+					<PlayCircleIcon
+						className="w-10 h-10"
+						onClick={togglePlay}
+					/>
+				) : (
+					<PauseCircleIcon
+						className="w-10 h-10"
+						onClick={togglePlay}
+					/>
+				)}
+				
+				<p>{phonetic}</p>
+				{/* <div className="text-sm bg-gray-200 text-black rounded px-1.5">UK</div>
+				<div className="text-sm bg-gray-200 text-black rounded px-1.5">US</div> */}
+			</div>
+			<div className="ml-3">
+				<div className="flex gap-2 mt-4  select-none">
+					{meanings.map((speech: any, index: number) => {
+						return (
+							<button
+								key={index}
+								type="button"
+								className={`${
+									state === index
+										? "bg-black text-white"
+										: "bg-gray-200 text-black"
+								}  px-3  text-sm rounded`}
+								onClick={() => handleClick(index)}
+							>
+								{speech.partOfSpeech}
+							</button>
+						);
+					})}
+
+					{/* <button
             type="button"
             className="bg-gray-200 text-black px-3  text-sm rounded"
           >
             verb
-          </button>
-        </div>
-        <div className="mt-4 mx-4 select-text">
-          <ol className="list-decimal  list-outside">
-            <li>
-              A common, round fruit produced by the tree Malus domestica,
-              cultivated in temperate climates.
-            </li>
-            <li>
-              Any of various tree-borne fruits or vegetables especially
-              considered as resembling an apple; also (with qualifying words)
-              used to form the names of other specific fruits such as custard
-              apple, rose apple, thorn apple etc.
-            </li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  );
+          </button> */}
+				</div>
+				<div className="mt-4 mx-4 select-text">
+					<ol className="list-decimal  list-outside">
+						{meanings[state].definitions?.map(
+							(item: any, index: number) => {
+								return <li key={index}>{item.definition}</li>;
+							}
+						)}
+					</ol>
+				</div>
+			</div>
+		</div>
+	);
 };

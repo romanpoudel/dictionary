@@ -20,7 +20,7 @@ const Search = async () => {
           className="bg-slate-100 outline-none pl-8 sm:pl-10 w-full"
         />
       </div>
-      <Meaning data={data} />
+      <Meaning data={data[0]} />
     </div>
   );
 };
