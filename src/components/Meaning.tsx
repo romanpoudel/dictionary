@@ -10,13 +10,14 @@ export const Meaning = ({ data }: { data: any }) => {
 		backgroundColor: "bg-gray-200",
 		textColor: "text-black",
 	});
+  
 	const { word, phonetic, phonetics, meanings } = data;
 
 	// const [audio] = useState(new Audio(phonetics[0].audio));
   const [audio, setAudio] = useState<HTMLAudioElement|null>(null)
   useEffect(() => {
 
-    setAudio(new Audio(phonetics[0].audio)) // only call client
+    setAudio(new Audio(phonetics[0]?.audio)) // only call client
 
 },[phonetics])
 	const togglePlay = () => {
